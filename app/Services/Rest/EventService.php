@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Rest;
 
 use App\Models\Event;
 use Carbon\Carbon;
@@ -30,18 +30,22 @@ class EventService
     }
 
 
-    public function getAll(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    /**
+     * @return Builder|Collection
+     */
+    public function getAll()
     {
-        return $this->build()->orderBy('created_at', 'desc')->paginate(5);
+        return $this->build()->get();
     }
 
-    public function totalEvents(){
-        return $this->build()->get()->count();
-    }
-
-
-    public function getEventById($id){
-        return $this->query()->build()->where('id','=',$id)->first();
+    /**
+     * @param $request
+     * @return Builder|Collection
+     */
+    public function getActiveEvents($request){
+        $query =  $this->build()
+                    ->whereBetween('created_at',[Carbon::parse($request->startAt)->toDateString(), Carbon::parse($request->endAt)->toDateString()]);
+        return $query->get();
     }
 
     /**
@@ -66,9 +70,23 @@ class EventService
     public function update($request, $event)
     {
         DB::transaction(function () use ($request, $event, &$Event) {
-            $Event = $event->update($request->validated());
+            $Event = $event->updateOrCreate($request->validated());
         });
 
         return $Event;
+    }
+
+    /**
+     * @param $request
+     * @param $event
+     * @return mixed
+     */
+    public function partiallyUpdate($request, $event){
+
+        DB::transaction(function () use ($request, $event, &$Event) {
+            $event->update($request->validated());
+        });
+
+        return $event;
     }
 }

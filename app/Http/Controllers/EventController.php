@@ -2,89 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Event\GetActiveEventRequest;
 use App\Http\Requests\Event\StoreEventRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
-use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Services\EventService;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class EventController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return response(EventResource::collection(EventService::query()->getAll()));
+        return view('event.events', [
+                'events' => EventService::query()->getAll(),
+                'totalEvents'=> EventService::query()->totalEvents()
+            ]);
     }
 
-    public function activeEvents(GetActiveEventRequest $request){
-        return response(EventResource::collection(EventService::query()->getActiveEvents($request)));
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('event.add-update-events');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreEventRequest $request
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(StoreEventRequest $request)
     {
-        return response(new EventResource(EventService::query()->create($request)));
+            $event = EventService::query()->create($request);
+            if(isset($event)){
+                return redirect()->route('events.index');
+            }
+
     }
 
     /**
-     * @param Event $event
-     * @return Application|ResponseFactory|Response
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show(Event $event)
     {
-        return response(new EventResource($event));
+        return view('event.add-update-events', ['event' => $event]);
     }
 
     /**
-     * @param UpdateEventRequest $request
-     * @param Event $event
-     * @return Application|ResponseFactory|Response
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Event $event)
+    {
+        return view('event.add-update-events', ['event' => $event]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
-        return response(new EventResource(EventService::query()->update($request, $event)));
-    }
-
-    /**
-     * @param UpdateEventRequest $request
-     * @param Event $event
-     * @return Application|ResponseFactory|Response
-     */
-    public function partiallyUpdate(UpdateEventRequest $request, Event $event){
-        return response(new EventResource(EventService::query()->partiallyUpdate($request, $event)));
-
-    }
-
-    /**
-     * @param Event $event
-     * @return JsonResponse
-     */
-    public function destroy(Event $event)
-    {
-        try {
-            if (!$event->delete()) {
-                throw new \Exception('Error', 500);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['ok' => false, 'error' => $e->getMessage()], $e->getCode(), false);
+        $event = EventService::query()->update($request, $event);
+        if(isset($event)){
+            return redirect()->route('events.index');
         }
+    }
 
-
-        return response()->json(['ok' => true, 'message' => 'Deleted Successfully']);
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $event = EventService::query()->getEventById($id);
+        if($event->delete()){
+            return redirect()->route('events.index');
+        }else{
+            return redirect()->back();
+        }
     }
 }
