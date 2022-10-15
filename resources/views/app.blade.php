@@ -236,6 +236,24 @@
         .modal form label {
             font-weight: normal;
         }
+        .search-box {
+            position: relative;
+            float: right;
+        }
+        .search-box i {
+            color: #a0a5b1;
+            position: absolute;
+            font-size: 19px;
+            top: 8px;
+            left: 10px;
+        }
+        .search-box input {
+            height: 34px;
+            border-radius: 20px;
+            padding-left: 35px;
+            border-color: #ddd;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -247,7 +265,13 @@
                     <div class="col-sm-6">
                         <h2>Manage <b>@yield('title')</b></h2>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
+                        <div class="search-box">
+                            <i class="material-icons">&#xE8B6;</i>
+                            <input type="text" name="searchText" class="form-control" id="search" placeholder="Search&hellip;">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
                         <a href="{{route('events.create')}}" class="btn btn-success"><i class="material-icons">&#xE147;</i> <span>Add New Event</span></a>
                     </div>
                 </div>
@@ -283,6 +307,8 @@
         $('#close').on('click',function (){
             $('.alert').hide();
         });
+
+
 
 
     });
