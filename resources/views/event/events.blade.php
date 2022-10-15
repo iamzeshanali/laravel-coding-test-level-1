@@ -31,7 +31,7 @@
                 <td>{{$event->created_at}}</td>
                 <td>{{$event->updated_at}}</td>
                 <td class="d-flex">
-                    <a href="{{route('events.show', $event->id)}}" class="edit"><i
+                    <a href="{{route('events.show', $event->id)}}" class="view"><i
                             class="material-icons" data-toggle="tooltip" title="View">&#xE8F4;</i></a>
                     <a href="{{route('events.edit', $event->id)}}" class="edit"><i
                             class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
