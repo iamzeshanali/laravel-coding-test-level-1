@@ -22,6 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1'], function(){
     Route::get('events/active-events', [EventController::class, 'activeEvents']);
     Route::apiResource('events', EventController::class);
-    Route::patch('events/{event}', [EventController::class, 'partiallyUpdate']);
+    Route::patch('events/{event}', [EventController::class, 'patch']);
 
 });

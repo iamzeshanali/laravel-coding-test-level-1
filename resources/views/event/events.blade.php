@@ -1,4 +1,5 @@
 @extends('app')
+@section('title','Events')
 @section('content')
     <table class="table table-striped table-hover">
         <thead>

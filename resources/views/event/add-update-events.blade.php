@@ -1,4 +1,5 @@
 @extends('app')
+@section('title','Events')
 @section('content')
     <form method="post" action="{{ isset($event) ? route('events.update', $event->id) : route('events.store')}}">
         @csrf
