@@ -2,14 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EventCreated;
 use App\Http\Requests\Event\StoreEventRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
+use App\Jobs\SendEmailJob;
 use App\Models\Event;
 use App\Services\EventService;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', [
+           'except'=>[
+               'index', 'show'
+           ]
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -42,6 +53,7 @@ class EventController extends Controller
     {
             $event = EventService::query()->create($request);
             if(isset($event)){
+                $this->dispatch(new SendEmailJob($event));
                 return redirect()->route('events.index');
             }
 

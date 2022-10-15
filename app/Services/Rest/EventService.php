@@ -17,7 +17,7 @@ class EventService
     /**
      * @return Builder
      */
-    public function build()
+    public function build(): Builder
     {
         return Event::query();
     }
@@ -25,7 +25,8 @@ class EventService
     /**
      * @return EventService
      */
-    public static function query(){
+    public static function query(): EventService
+    {
         return new self();
     }
 
@@ -33,7 +34,7 @@ class EventService
     /**
      * @return Builder|Collection
      */
-    public function getAll()
+    public function getAll(): Collection|Builder
     {
         return $this->build()->get();
     }
@@ -42,7 +43,8 @@ class EventService
      * @param $request
      * @return Builder|Collection
      */
-    public function getActiveEvents($request){
+    public function getActiveEvents($request): Collection|Builder
+    {
         $query =  $this->build()
                     ->whereBetween('created_at',[Carbon::parse($request->startAt)->toDateString(), Carbon::parse($request->endAt)->toDateString()]);
         return $query->get();
@@ -52,7 +54,7 @@ class EventService
      * @param $request
      * @return mixed
      */
-    public function create($request)
+    public function create($request): mixed
     {
         DB::transaction(function () use ($request, &$event){
             $event = new Event();
@@ -67,7 +69,7 @@ class EventService
      * @param $event
      * @return mixed
      */
-    public function update($request, $event)
+    public function update($request, $event): mixed
     {
         DB::transaction(function () use ($request, $event, &$Event) {
             $Event = $event->updateOrCreate($request->validated());
@@ -81,7 +83,8 @@ class EventService
      * @param $event
      * @return mixed
      */
-    public function partiallyUpdate($request, $event){
+    public function patch($request, $event): mixed
+    {
 
         DB::transaction(function () use ($request, $event, &$Event) {
             $event->update($request->validated());
